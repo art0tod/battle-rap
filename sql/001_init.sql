@@ -175,9 +175,9 @@ CREATE TABLE comment (
   match_track_id UUID REFERENCES match_track(id) ON DELETE CASCADE,
   body          TEXT NOT NULL,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
-  CONSTRAINT fk_comment_track_belongs
-    FOREIGN KEY (match_track_id, match_id)
-    REFERENCES match_track(id, match_id)
+  CONSTRAINT fk_comment_track
+    FOREIGN KEY (match_track_id)
+    REFERENCES match_track(id)
     DEFERRABLE INITIALLY DEFERRED
 );
 

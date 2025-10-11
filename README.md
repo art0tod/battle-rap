@@ -29,6 +29,7 @@ Battle Rap MVP API implements the domain model for tournaments, qualifiers, judg
 ## API Overview
 - **Auth**: `POST /api/auth/register` and `POST /api/auth/login` issue JWTs. Registration supports optional `roles` (`artist`, `judge`, `listener`).
 - **Users**: `GET /api/users/me`, `GET /api/users/:userId`, role management endpoints (admin only), and artist profile CRUD at `/api/users/:userId/artist-profile`.
+- **Admin**: `/api/admin/dashboard`, `/api/admin/users`, and `/api/admin/submissions/:id/moderation` provide metrics, user inventory, and submission locking. `/api/admin/media-assets` manages storage metadata.
 - **Tournaments**: Admin/moderator create tournaments, manage status, assign participants (`POST /api/tournaments/:id/participants`) and judges, and configure rounds.
 - **Rounds & Submissions**: Artists manage qualifier submissions at `/api/rounds/:roundId/submissions/*`. Admins build bracket matches via `/api/rounds/:roundId/matches`.
 - **Matches & Evaluation**: Judges submit scores with `/api/evaluations/*`; listener engagement (likes/comments) shares the underlying schema for future iterations.

@@ -34,12 +34,12 @@ async function saveDraft({ roundId, participantId, audioId, lyrics }) {
       }
       const updateResult = await client.query(
         `UPDATE submission
-         SET audio_id = $3,
-             lyrics = $4,
+         SET audio_id = $1,
+             lyrics = $2,
              updated_at = now()
-         WHERE id = $5
+         WHERE id = $3
          RETURNING *`,
-        [roundId, participantId, audioId, lyrics, current.id]
+        [audioId, lyrics, current.id]
       );
       return mapSubmission(updateResult.rows[0]);
     }
@@ -81,14 +81,14 @@ async function submit({ roundId, participantId, audioId, lyrics }) {
     }
     const updateResult = await client.query(
       `UPDATE submission
-       SET audio_id = $3,
-           lyrics = $4,
+       SET audio_id = $1,
+           lyrics = $2,
            status = 'submitted',
            submitted_at = now(),
            updated_at = now()
-       WHERE id = $5
+       WHERE id = $3
        RETURNING *`,
-      [roundId, participantId, audioId, lyrics, current.id]
+      [audioId, lyrics, current.id]
     );
     return mapSubmission(updateResult.rows[0]);
   });
@@ -111,9 +111,37 @@ async function listSubmissionsByRound(roundId) {
   return result.rows.map(mapSubmission);
 }
 
+async function setSubmissionLock({ submissionId, locked, status }) {
+  const allowedStatuses = ['draft', 'submitted', 'locked', 'disqualified'];
+  if (status && !allowedStatuses.includes(status)) {
+    throw new HttpError(400, `Unsupported submission status: ${status}`);
+  }
+  if (locked && status === 'draft') {
+    throw new HttpError(400, 'Locked submissions cannot be in draft status');
+  }
+
+  return transaction(async (client) => {
+    const result = await client.query(
+      `UPDATE submission
+       SET locked_by_admin = $2,
+           status = COALESCE($3, status),
+           updated_at = now()
+       WHERE id = $1
+       RETURNING *`,
+      [submissionId, locked, status ?? null]
+    );
+    const submission = result.rows[0];
+    if (!submission) {
+      throw new HttpError(404, 'Submission not found');
+    }
+    return mapSubmission(submission);
+  });
+}
+
 module.exports = {
   saveDraft,
   submit,
   getSubmissionById,
-  listSubmissionsByRound
+  listSubmissionsByRound,
+  setSubmissionLock
 };

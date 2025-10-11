@@ -9,7 +9,7 @@
     "build": "rm -rf dist && mkdir -p dist && cp -R src dist && cp package.json dist/",
     "lint": "eslint \"src/**/*.js\"",
     "test": "jest",
-    "migrate": "node scripts/migrate.js"
+    "migrate": "node --env-file=.env scripts/migrate.js "
   },
   "keywords": [
     "battle-rap",

@@ -40,6 +40,34 @@ async function getUserById(id) {
   return { ...user, roles };
 }
 
+async function listUsers() {
+  const pool = getPool();
+  const result = await pool.query(
+    `SELECT
+       u.id,
+       u.email,
+       u.display_name,
+       u.created_at,
+       u.updated_at,
+       COALESCE(
+         ARRAY_AGG(aur.role ORDER BY aur.role) FILTER (WHERE aur.role IS NOT NULL),
+         '{}'
+       ) AS roles
+     FROM app_user u
+     LEFT JOIN app_user_role aur ON aur.user_id = u.id
+     GROUP BY u.id
+     ORDER BY u.created_at DESC`
+  );
+  return result.rows.map((row) => ({
+    id: row.id,
+    email: row.email,
+    displayName: row.display_name,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    roles: row.roles
+  }));
+}
+
 async function getUserRoles(userId) {
   const pool = getPool();
   const result = await pool.query(
@@ -138,6 +166,7 @@ module.exports = {
   createUser,
   getUserByEmail,
   getUserById,
+  listUsers,
   addRoles,
   setRoles,
   getUserRoles

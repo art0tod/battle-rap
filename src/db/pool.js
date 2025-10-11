@@ -13,6 +13,9 @@ function getPool() {
       max: 10,
       ssl: config.env === 'production' ? { rejectUnauthorized: false } : false
     });
+    pool.on('connect', (client) => {
+      client.query('SET search_path TO public');
+    });
     pool.on('error', (err) => {
       logger.error('Unexpected database error', { error: err });
     });

@@ -45,6 +45,30 @@ Set the collection `baseUrl` variable to `http://localhost:3000/api`. Every requ
   }
   ```
 
+## Admin (admin role required)
+- **Dashboard Metrics**  
+  `GET {{baseUrl}}/admin/dashboard`
+- **List Users**  
+  `GET {{baseUrl}}/admin/users`
+- **Lock / Unlock Submission**  
+  `PATCH {{baseUrl}}/admin/submissions/{{submissionId}}/moderation`  
+  ```json
+  { "locked": true, "status": "locked" }
+  ```
+- **Create Media Asset Stub**  
+  `POST {{baseUrl}}/admin/media-assets`  
+  ```json
+  {
+    "kind": "audio",
+    "storageKey": "media/audio/qualifier-001.mp3",
+    "mime": "audio/mpeg",
+    "sizeBytes": 4200000,
+    "durationSec": 95.4
+  }
+  ```
+- **List Media Assets**  
+  `GET {{baseUrl}}/admin/media-assets?kind=audio`
+
 ## Tournaments
 - **List**  
   `GET {{baseUrl}}/tournaments`
