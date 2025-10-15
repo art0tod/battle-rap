@@ -1,5 +1,6 @@
-import { getPool } from '../db';
+import { getPool, transaction } from '../db';
 import { HttpError } from '../middleware/errorHandler';
+import { ensureDefaultCriteriaForKeys } from './roundRubricService';
 
 export const ROUND_KINDS = ['qualifier1', 'qualifier2', 'bracket'] as const;
 export type RoundKind = (typeof ROUND_KINDS)[number];
@@ -65,20 +66,25 @@ export async function createRound({
     throw new HttpError(400, 'Rubric rounds require rubricKeys');
   }
 
-  const pool = getPool();
-  const rubricParam =
+  const normalizedKeys =
     scoring === 'rubric' && Array.isArray(rubricKeys)
       ? rubricKeys.map((key) => key.toLowerCase())
       : null;
 
   try {
-    const result = await pool.query<RoundRow>(
-      `INSERT INTO round (tournament_id, kind, number, scoring, rubric_keys)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, tournament_id, kind, number, scoring, rubric_keys, created_at`,
-      [tournamentId, kind, number, scoring, rubricParam]
-    );
-    return mapRound(result.rows[0]);
+    return await transaction(async (client) => {
+      const result = await client.query<RoundRow>(
+        `INSERT INTO round (tournament_id, kind, number, scoring, rubric_keys)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, tournament_id, kind, number, scoring, rubric_keys, created_at`,
+        [tournamentId, kind, number, scoring, normalizedKeys]
+      );
+      const round = mapRound(result.rows[0]);
+      if (round && normalizedKeys) {
+        await ensureDefaultCriteriaForKeys(client, round.id, normalizedKeys);
+      }
+      return round;
+    });
   } catch (error: unknown) {
     if (isDatabaseConflictError(error)) {
       throw new HttpError(409, 'Round with the same kind and number already exists');

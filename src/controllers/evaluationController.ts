@@ -17,7 +17,7 @@ const submissionEvalSchema = z.object({
 });
 
 const matchEvalSchema = z.object({
-  rubric: z.record(z.number().int()),
+  rubric: z.record(z.number()),
   comment: z.string().max(2000).optional()
 });
 

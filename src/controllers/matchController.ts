@@ -5,11 +5,14 @@ import {
   addMatchParticipant,
   createMatch,
   createMatchTrack,
+  getMatchById,
   listMatchParticipants,
   listMatchTracks,
   listMatchesByRound
 } from '../services/matchService';
 import { asyncHandler } from '../utils/asyncHandler';
+import { ensureRoundVisible } from './helpers/visibility';
+import { HttpError } from '../middleware/errorHandler';
 
 const createMatchSchema = z.object({
   startsAt: z.string().datetime().optional()
@@ -40,8 +43,18 @@ export const create: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 export const list: RequestHandler = asyncHandler(async (req, res) => {
-  const matches = await listMatchesByRound(req.params.roundId);
+  const round = await ensureRoundVisible(req.params.roundId, req.user);
+  const matches = await listMatchesByRound(round.id);
   res.json({ matches });
+});
+
+export const show: RequestHandler = asyncHandler(async (req, res) => {
+  const match = await getMatchById(req.params.matchId);
+  if (!match) {
+    throw new HttpError(404, 'Match not found');
+  }
+  await ensureRoundVisible(match.roundId, req.user);
+  res.json({ match });
 });
 
 export const addParticipantHandler: RequestHandler = asyncHandler(async (req, res) => {

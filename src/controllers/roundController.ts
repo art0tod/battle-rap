@@ -3,6 +3,8 @@ import { z } from 'zod';
 
 import { asyncHandler } from '../utils/asyncHandler';
 import { createRound, listRoundsByTournament } from '../services/roundService';
+import { ensureRoundVisible, ensureTournamentVisible } from './helpers/visibility';
+import { listCriteriaByRound } from '../services/roundRubricService';
 
 const createRoundSchema = z.object({
   kind: z.enum(['qualifier1', 'qualifier2', 'bracket'] as const),
@@ -23,6 +25,18 @@ export const create: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 export const list: RequestHandler = asyncHandler(async (req, res) => {
+  await ensureTournamentVisible(req.params.tournamentId, req.user);
   const rounds = await listRoundsByTournament(req.params.tournamentId);
   res.json({ rounds });
+});
+
+export const show: RequestHandler = asyncHandler(async (req, res) => {
+  const round = await ensureRoundVisible(req.params.roundId, req.user);
+  res.json({ round });
+});
+
+export const listCriteria: RequestHandler = asyncHandler(async (req, res) => {
+  const round = await ensureRoundVisible(req.params.roundId, req.user);
+  const criteria = await listCriteriaByRound(round.id);
+  res.json({ criteria });
 });

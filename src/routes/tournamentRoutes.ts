@@ -15,9 +15,9 @@ import { allowRolesOrSelfBody, requireAuth, requireRoles } from '../middleware/a
 
 const router = express.Router();
 
-router.get('/', requireAuth, list);
+router.get('/', list);
 router.post('/', requireAuth, requireRoles(['admin', 'moderator']), create);
-router.get('/:tournamentId', requireAuth, show);
+router.get('/:tournamentId', show);
 router.patch(
   '/:tournamentId/status',
   requireAuth,
@@ -47,6 +47,6 @@ router.post(
   requireRoles(['admin', 'moderator']),
   createRound
 );
-router.get('/:tournamentId/rounds', requireAuth, listRounds);
+router.get('/:tournamentId/rounds', listRounds);
 
 export const tournamentRoutes: Router = router;

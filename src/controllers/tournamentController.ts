@@ -7,12 +7,13 @@ import {
   addJudge,
   addParticipant,
   createTournament,
-  getTournamentById,
   listTournamentJudges,
   listTournamentParticipants,
   listTournaments,
   setTournamentStatus
 } from '../services/tournamentService';
+import { ensureTournamentVisible } from './helpers/visibility';
+import { isStaff } from '../utils/access';
 
 const createTournamentSchema = z.object({
   title: z.string().min(3),
@@ -32,7 +33,8 @@ type StatusPayload = z.infer<typeof statusSchema>;
 type LinkUserPayload = z.infer<typeof linkUserSchema>;
 
 export const list: RequestHandler = asyncHandler(async (req, res) => {
-  const tournaments = await listTournaments();
+  const includeDrafts = isStaff(req.user);
+  const tournaments = await listTournaments({ includeDrafts });
   res.json({ tournaments });
 });
 
@@ -43,10 +45,32 @@ export const create: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 export const show: RequestHandler = asyncHandler(async (req, res) => {
-  const tournament = await getTournamentById(req.params.tournamentId);
-  if (!tournament) {
+  const includePrivate = isStaff(req.user);
+  const tournament = await ensureTournamentVisible(req.params.tournamentId, req.user);
+  if (!includePrivate && tournament.status === 'draft') {
     throw new HttpError(404, 'Tournament not found');
   }
+
+  if (!includePrivate) {
+    const [participants, judges] = await Promise.all([
+      listTournamentParticipants(tournament.id),
+      listTournamentJudges(tournament.id)
+    ]);
+    res.json({
+      tournament,
+      participants: participants.map((participant) => ({
+        id: participant.id,
+        userId: participant.userId,
+        displayName: participant.displayName
+      })),
+      judges: judges.map((judge) => ({
+        userId: judge.userId,
+        displayName: judge.displayName
+      }))
+    });
+    return;
+  }
+
   const [participants, judges] = await Promise.all([
     listTournamentParticipants(tournament.id),
     listTournamentJudges(tournament.id)

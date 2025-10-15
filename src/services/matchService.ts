@@ -54,6 +54,17 @@ function mapMatch(row?: MatchRow | null): Match | null {
   };
 }
 
+export async function getMatchById(matchId: string): Promise<Match | null> {
+  const pool = getPool();
+  const result = await pool.query<MatchRow>(
+    `SELECT id, round_id, starts_at
+     FROM match
+     WHERE id = $1`,
+    [matchId]
+  );
+  return mapMatch(result.rows[0]);
+}
+
 function mapMatchTrack(row?: MatchTrackRow | null): MatchTrack | null {
   if (!row) return null;
   return {

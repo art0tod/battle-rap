@@ -11,6 +11,6 @@ const router = express.Router();
 
 router.post('/rounds/:roundId/submissions/draft', requireAuth, saveDraftHandler);
 router.post('/rounds/:roundId/submissions/submit', requireAuth, submitHandler);
-router.get('/rounds/:roundId/submissions', requireAuth, listHandler);
+router.get('/rounds/:roundId/submissions', listHandler);
 
 export const submissionRoutes: Router = router;

@@ -32,11 +32,20 @@ function mapTournament(row?: TournamentRow | null): Tournament | null {
   };
 }
 
-export async function listTournaments(): Promise<Tournament[]> {
+interface ListTournamentsOptions {
+  includeDrafts?: boolean;
+}
+
+export async function listTournaments(
+  options: ListTournamentsOptions = {}
+): Promise<Tournament[]> {
+  const { includeDrafts = false } = options;
   const pool = getPool();
+  const whereClause = includeDrafts ? '' : "WHERE status <> 'draft'";
   const result = await pool.query<TournamentRow>(
     `SELECT id, title, max_bracket_size, status, created_at
      FROM tournament
+     ${whereClause}
      ORDER BY created_at DESC`
   );
   return result.rows
@@ -44,11 +53,24 @@ export async function listTournaments(): Promise<Tournament[]> {
     .filter((tournament): tournament is Tournament => tournament !== null);
 }
 
-export async function getTournamentById(id: string): Promise<Tournament | null> {
+interface GetTournamentOptions {
+  includeDrafts?: boolean;
+}
+
+export async function getTournamentById(
+  id: string,
+  options: GetTournamentOptions = {}
+): Promise<Tournament | null> {
+  const { includeDrafts = false } = options;
   const pool = getPool();
+  const conditions = ['id = $1'];
+  if (!includeDrafts) {
+    conditions.push("status <> 'draft'");
+  }
   const result = await pool.query<TournamentRow>(
     `SELECT id, title, max_bracket_size, status, created_at
-     FROM tournament WHERE id = $1`,
+     FROM tournament
+     WHERE ${conditions.join(' AND ')}`,
     [id]
   );
   return mapTournament(result.rows[0]);

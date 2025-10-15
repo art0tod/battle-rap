@@ -6,7 +6,8 @@ import {
   create,
   list,
   listParticipantsHandler,
-  listTracksHandler
+  listTracksHandler,
+  show
 } from '../controllers/matchController';
 import { requireAuth, requireRoles } from '../middleware/authMiddleware';
 
@@ -18,7 +19,9 @@ router.post(
   requireRoles(['admin', 'moderator']),
   create
 );
-router.get('/rounds/:roundId/matches', requireAuth, list);
+router.get('/rounds/:roundId/matches', list);
+router.get('/rounds/:roundId/battles', list);
+router.get('/battles/:matchId', show);
 
 router.post(
   '/matches/:matchId/participants',

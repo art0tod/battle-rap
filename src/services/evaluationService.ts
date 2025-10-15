@@ -1,6 +1,7 @@
 import { getPool } from '../db';
 import { HttpError } from '../middleware/errorHandler';
 import type { ScoringMode } from './roundService';
+import { listCriteriaByRound } from './roundRubricService';
 
 export interface Evaluation {
   id: string;
@@ -26,7 +27,6 @@ interface MatchRow {
   id: string;
   round_id: string;
   scoring: ScoringMode;
-  rubric_keys: string[];
 }
 
 interface EvaluationRow {
@@ -119,7 +119,7 @@ export async function evaluateMatch({
 }: EvaluateMatchParams): Promise<Evaluation> {
   const pool = getPool();
   const matchResult = await pool.query<MatchRow>(
-    `SELECT m.id, r.id AS round_id, r.scoring, r.rubric_keys
+    `SELECT m.id, r.id AS round_id, r.scoring
      FROM match m
      JOIN round r ON r.id = m.round_id
      WHERE m.id = $1`,
@@ -135,22 +135,38 @@ export async function evaluateMatch({
   if (!rubric || typeof rubric !== 'object') {
     throw new HttpError(400, 'rubric object is required');
   }
-  if (!Array.isArray(match.rubric_keys) || match.rubric_keys.length === 0) {
+
+  const criteria = await listCriteriaByRound(match.round_id);
+  if (criteria.length === 0) {
     throw new HttpError(400, 'Rubric configuration missing for round');
   }
 
   const normalizedRubric: Record<string, number> = {};
   let totalScore = 0;
-  for (const key of match.rubric_keys) {
-    const value = Number((rubric as Record<string, unknown>)[key]);
+  const payloadKeys = new Set(Object.keys(rubric));
+
+  for (const criterion of criteria) {
+    const rawValue = (rubric as Record<string, unknown>)[criterion.key];
+    if (rawValue === undefined) {
+      throw new HttpError(422, `Rubric value for ${criterion.key} is required`);
+    }
+    const value = Number(rawValue);
     if (!Number.isFinite(value)) {
-      throw new HttpError(400, `Rubric value for ${key} is required`);
+      throw new HttpError(422, `Rubric value for ${criterion.key} must be a number`);
     }
-    if (value < 0 || value > 3) {
-      throw new HttpError(400, `Rubric value for ${key} must be between 0 and 3`);
+    if (value < criterion.minValue || value > criterion.maxValue) {
+      throw new HttpError(
+        422,
+        `Rubric value for ${criterion.key} must be between ${criterion.minValue} and ${criterion.maxValue}`
+      );
     }
-    normalizedRubric[key] = value;
+    normalizedRubric[criterion.key] = value;
     totalScore += value;
+    payloadKeys.delete(criterion.key);
+  }
+
+  if (payloadKeys.size > 0) {
+    throw new HttpError(400, `Unknown rubric keys: ${Array.from(payloadKeys).join(', ')}`);
   }
 
   const result = await pool.query<EvaluationRow>(

@@ -3,9 +3,16 @@ import { z } from 'zod';
 
 import { HttpError } from '../middleware/errorHandler';
 import { getParticipantById } from '../services/participantService';
-import { listSubmissionsByRound, saveDraft, submit } from '../services/submissionService';
+import {
+  listSubmissionsByRound,
+  saveDraft,
+  submit,
+  type SubmissionStatus
+} from '../services/submissionService';
 import type { User } from '../services/userService';
 import { asyncHandler } from '../utils/asyncHandler';
+import { ensureRoundVisible } from './helpers/visibility';
+import { isStaff } from '../utils/access';
 
 const submissionPayload = z.object({
   participantId: z.string().uuid(),
@@ -36,8 +43,15 @@ export const submitHandler: RequestHandler = asyncHandler(async (req, res) => {
 });
 
 export const listHandler: RequestHandler = asyncHandler(async (req, res) => {
-  const submissions = await listSubmissionsByRound(req.params.roundId);
-  res.json({ submissions });
+  const round = await ensureRoundVisible(req.params.roundId, req.user);
+  const submissions = await listSubmissionsByRound(round.id);
+  const includePrivate = isStaff(req.user);
+  const visibleSubmissions = includePrivate
+    ? submissions
+    : submissions.filter((submission) =>
+        isPublicSubmissionStatus(submission.status)
+      );
+  res.json({ submissions: visibleSubmissions });
 });
 
 async function assertCanEditSubmission(user: User | undefined, participantId: string): Promise<void> {
@@ -54,4 +68,9 @@ async function assertCanEditSubmission(user: User | undefined, participantId: st
   if (participant.userId !== user.id) {
     throw new HttpError(403, 'You cannot modify another participant submission');
   }
+}
+
+function isPublicSubmissionStatus(status: SubmissionStatus): boolean {
+  const allowed: SubmissionStatus[] = ['submitted', 'locked'];
+  return allowed.includes(status);
 }
