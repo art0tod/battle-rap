@@ -1,0 +1,25 @@
+meta {
+  name: Add Match Participant
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/matches/{{matchId}}/participants
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "participantId": "{{participantId}}",
+    "seed": 1
+  }
+}
+
+tests {
+  status: 201
+}

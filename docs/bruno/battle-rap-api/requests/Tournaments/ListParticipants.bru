@@ -1,0 +1,17 @@
+meta {
+  name: List Participants
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}/participants
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

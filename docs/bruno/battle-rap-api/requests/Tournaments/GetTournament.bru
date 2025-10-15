@@ -1,0 +1,17 @@
+meta {
+  name: Get Tournament
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

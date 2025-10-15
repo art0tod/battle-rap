@@ -1,0 +1,26 @@
+meta {
+  name: Upload Match Track
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/matches/{{matchId}}/tracks
+}
+
+headers {
+  Authorization: Bearer {{artistToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "participantId": "{{participantId}}",
+    "audioId": "{{audioId}}",
+    "lyrics": "Battle round verse."
+  }
+}
+
+tests {
+  status: 201
+}

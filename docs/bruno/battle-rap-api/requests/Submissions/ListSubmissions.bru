@@ -1,0 +1,17 @@
+meta {
+  name: List Submissions
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/rounds/{{roundId}}/submissions
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

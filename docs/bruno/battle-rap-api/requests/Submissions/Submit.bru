@@ -1,0 +1,26 @@
+meta {
+  name: Submit
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/rounds/{{roundId}}/submissions/submit
+}
+
+headers {
+  Authorization: Bearer {{artistToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "participantId": "{{participantId}}",
+    "audioId": "{{audioId}}",
+    "lyrics": "Battle-ready final verse."
+  }
+}
+
+tests {
+  status: 200
+}

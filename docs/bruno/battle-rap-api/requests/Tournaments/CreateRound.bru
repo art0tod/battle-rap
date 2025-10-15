@@ -1,0 +1,26 @@
+meta {
+  name: Create Round
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}/rounds
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "kind": "qualifier1",
+    "number": 1,
+    "scoring": "pass_fail"
+  }
+}
+
+tests {
+  status: 201
+}

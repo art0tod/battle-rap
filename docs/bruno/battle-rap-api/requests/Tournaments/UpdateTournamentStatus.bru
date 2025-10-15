@@ -1,0 +1,24 @@
+meta {
+  name: Update Tournament Status
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}/status
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "status": "active"
+  }
+}
+
+tests {
+  status: 200
+}

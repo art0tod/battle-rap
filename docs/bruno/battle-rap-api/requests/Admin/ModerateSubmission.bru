@@ -1,0 +1,25 @@
+meta {
+  name: Moderate Submission
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/admin/submissions/{{submissionId}}/moderation
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "locked": true,
+    "status": "locked"
+  }
+}
+
+tests {
+  status: 200
+}

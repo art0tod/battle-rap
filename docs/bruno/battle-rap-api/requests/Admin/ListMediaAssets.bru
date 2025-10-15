@@ -1,0 +1,17 @@
+meta {
+  name: List Media Assets
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/admin/media-assets?kind=audio
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+tests {
+  status: 200
+}

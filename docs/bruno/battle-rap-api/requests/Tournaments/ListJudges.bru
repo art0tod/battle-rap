@@ -1,0 +1,17 @@
+meta {
+  name: List Judges
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}/judges
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+tests {
+  status: 200
+}

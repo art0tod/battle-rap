@@ -1,0 +1,25 @@
+meta {
+  name: Judge Submission
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/evaluations/submission/{{submissionId}}
+}
+
+headers {
+  Authorization: Bearer {{judgeToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "pass": true,
+    "comment": "Approved for next round."
+  }
+}
+
+tests {
+  status: 201
+}

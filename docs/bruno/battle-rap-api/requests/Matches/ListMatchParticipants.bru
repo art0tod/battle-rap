@@ -1,0 +1,17 @@
+meta {
+  name: List Match Participants
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/matches/{{matchId}}/participants
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

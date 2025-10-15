@@ -1,0 +1,17 @@
+{
+  "version": "1",
+  "type": "collection",
+  "name": "Battle Rap API",
+  "ignore": [".git", "node_modules"],
+  "scripts": {
+    "filesystemAccess": {
+      "allow": true
+    }
+  },
+  "environments": [
+    {
+      "name": "local",
+      "path": "./environments/local.bru"
+    }
+  ]
+}

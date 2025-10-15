@@ -1,0 +1,24 @@
+meta {
+  name: Assign Judge
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}/judges
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "userId": "{{judgeUserId}}"
+  }
+}
+
+tests {
+  status: 201
+}

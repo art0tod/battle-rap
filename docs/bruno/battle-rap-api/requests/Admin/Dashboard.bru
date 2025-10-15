@@ -1,0 +1,17 @@
+meta {
+  name: Dashboard
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/admin/dashboard
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+tests {
+  status: 200
+}

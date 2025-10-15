@@ -1,0 +1,17 @@
+meta {
+  name: Get Artist Profile
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/users/{{artistUserId}}/artist-profile
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+}
+
+tests {
+  status: 200
+}

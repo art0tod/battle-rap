@@ -1,0 +1,24 @@
+meta {
+  name: Register Participant
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}/participants
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "userId": "{{artistUserId}}"
+  }
+}
+
+tests {
+  status: 201
+}

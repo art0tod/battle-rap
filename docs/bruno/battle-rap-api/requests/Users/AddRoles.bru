@@ -1,0 +1,24 @@
+meta {
+  name: Add Roles
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/users/{{targetUserId}}/roles
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "roles": ["judge"]
+  }
+}
+
+tests {
+  status: 200
+}

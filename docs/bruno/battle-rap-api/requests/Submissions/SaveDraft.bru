@@ -1,0 +1,26 @@
+meta {
+  name: Save Draft
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/rounds/{{roundId}}/submissions/draft
+}
+
+headers {
+  Authorization: Bearer {{artistToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "participantId": "{{participantId}}",
+    "audioId": "{{audioId}}",
+    "lyrics": "Some raw qualifier bars."
+  }
+}
+
+tests {
+  status: 200
+}

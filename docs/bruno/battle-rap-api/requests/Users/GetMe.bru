@@ -1,0 +1,17 @@
+meta {
+  name: Get Me
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/users/me
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

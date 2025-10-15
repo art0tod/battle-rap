@@ -1,0 +1,17 @@
+meta {
+  name: List Matches
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/rounds/{{roundId}}/matches
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

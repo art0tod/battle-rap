@@ -1,0 +1,29 @@
+meta {
+  name: Upsert Artist Profile
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/users/{{artistUserId}}/artist-profile
+}
+
+headers {
+  Authorization: Bearer {{artistToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "avatarKey": "media/avatars/artist-01.png",
+    "bio": "MC Example — punchlines & flow.",
+    "socials": {
+      "vk": "https://vk.com/example",
+      "instagram": "https://instagram.com/example"
+    }
+  }
+}
+
+tests {
+  status: 200
+}

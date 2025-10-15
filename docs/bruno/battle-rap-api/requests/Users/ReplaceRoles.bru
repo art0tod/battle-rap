@@ -1,0 +1,24 @@
+meta {
+  name: Replace Roles
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/users/{{targetUserId}}/roles
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "roles": ["artist", "judge"]
+  }
+}
+
+tests {
+  status: 200
+}

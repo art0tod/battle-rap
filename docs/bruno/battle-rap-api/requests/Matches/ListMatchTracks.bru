@@ -1,0 +1,17 @@
+meta {
+  name: List Match Tracks
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/matches/{{matchId}}/tracks
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

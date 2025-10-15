@@ -1,0 +1,17 @@
+meta {
+  name: List Match Evaluations
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/evaluations/match/{{matchId}}
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Judge Match
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/evaluations/match/{{matchId}}
+}
+
+headers {
+  Authorization: Bearer {{judgeToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "rubric": {
+      "delivery": 3,
+      "lyricism": 2,
+      "stage_presence": 3
+    },
+    "comment": "Tight battle."
+  }
+}
+
+tests {
+  status: 201
+}

@@ -1,0 +1,17 @@
+meta {
+  name: List Rounds
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/tournaments/{{tournamentId}}/rounds
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+tests {
+  status: 200
+}

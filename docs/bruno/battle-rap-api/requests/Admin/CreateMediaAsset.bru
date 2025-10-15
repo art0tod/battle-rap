@@ -1,0 +1,28 @@
+meta {
+  name: Create Media Asset
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/admin/media-assets
+}
+
+headers {
+  Authorization: Bearer {{adminToken}}
+  content-type: application/json
+}
+
+body:json {
+  {
+    "kind": "audio",
+    "storageKey": "{{mediaStorageKey}}",
+    "mime": "audio/mpeg",
+    "sizeBytes": 4200000,
+    "durationSec": 95.4
+  }
+}
+
+tests {
+  status: 201
+}
