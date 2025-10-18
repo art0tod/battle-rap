@@ -2,11 +2,11 @@
   "name": "battle-rap-api",
   "version": "0.1.0",
   "description": "Battle rap tournament MVP API",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "dev": "dotenv -e .env -- ts-node-dev --respawn --transpile-only src/index.ts",
-    "start": "node dist/index.js",
-    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "start": "node dist/src/index.js",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node dist/scripts/postbuild.js",
     "lint": "eslint \"src/**/*.ts\" \"scripts/**/*.ts\"",
     "test": "jest",
     "migrate": "ts-node --project tsconfig.json scripts/migrate.ts"

@@ -12,9 +12,16 @@ Battle Rap MVP API implements the domain model for tournaments, qualifiers, judg
 ## Key Scripts
 - `npm run dev` – nodemon watcher for local development.
 - `npm run start` – production-style start using the compiled JS in-place.
-- `npm run build` – copy the current `src/` tree into `dist/` (placeholder until a bundler is introduced).
+- `npm run build` – produces a deployable `dist/` with compiled sources, SQL migrations, and a trimmed `package.json`.
 - `npm run migrate` – executes all SQL files in `/sql` against the configured database.
 - `npm run lint` / `npm test` – static analysis and Jest test runner.
+
+## Deploying the Build Artifact
+1. Run `npm run build` locally. The command compiles TypeScript with production defaults and stages runtime assets under `dist/`.
+2. Copy the `dist/` directory to your VPS (e.g., via `scp -r dist user@server:/var/www/battle-rap`).
+3. On the VPS run `npm ci --omit=dev` inside the copied `dist/` directory to install only production dependencies.
+4. Configure environment variables (`cp .env.example .env` and adjust values, or inject via the process manager).
+5. Apply migrations with `npm run migrate`, then start the API with `npm run start`.
 
 ## Quick Seed
 - Register an admin to bootstrap permissions:
